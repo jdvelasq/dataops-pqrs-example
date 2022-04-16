@@ -12,7 +12,10 @@ initialize:
 	# --< Cleansed Zone >----------------------------------
 	rm -rf cleansed
 	mkdir cleansed
-	mkdir cleansed/pqrs
 
-	
+
+	# --< Business Zone >----------------------------------
+	rm -rf business
+	mkdir business
+	mkdir business/reports
 	
