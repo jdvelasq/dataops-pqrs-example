@@ -1,1 +1,1 @@
-# Caso de Análisis para Productos de Datos. Parte 1. Arquitectura basada en un RDBMS
+# Caso de Análisis para Productos de Datos. Parte 2. Arquitectura basada en un Data Lake
