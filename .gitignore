@@ -1,6 +1,7 @@
 .DS_Store
 operational_rdbms/*.csv
 reports/
+data_lake/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
