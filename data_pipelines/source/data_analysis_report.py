@@ -1,5 +1,7 @@
+import glob
 import os
 from datetime import datetime
+from lib2to3.pygram import pattern_symbols  # <----
 
 import pandas as pd
 
@@ -7,7 +9,8 @@ days_of_maximum_term = 10
 
 
 def main():
-    request_table = load_rdbms_requests_table()
+    ## request_table = load_rdbms_requests_table()
+    request_table = load_datalake_requests_table()
     request_table = request_table[request_table.status != "closed"]
     make_status_frequency_report(request_table)
     make_days_elapsed_report(request_table)
@@ -52,7 +55,10 @@ def make_status_frequency_report(request_table):
 
 def write_status_frequency_report(status_frequency):
     module_path = os.path.dirname(__file__)
-    folder_path = os.path.join(module_path, "../reports")
+    # -------------------------------------------------------------------------------->>>
+    # folder_path = os.path.join(module_path, "../reports")
+    folder_path = os.path.join(module_path, "../../data_lake/business/reports")
+    # <<<--------------------------------------------------------------------------------
     if not os.path.exists(folder_path):
         os.makedirs(folder_path)
     now = datetime.now().strftime("%Y-%m-%d_%H:%M:%S.%f")
@@ -68,14 +74,34 @@ def compute_status_frequency(request_table):
     return status_frequency
 
 
-def load_rdbms_requests_table():
+# ----------------------------------------------------------------------------------->>>
+# Se actualiza el código para que lea la tabla de requests desde el DataLake
+#
+# def load_rdbms_requests_table():
+#     module_path = os.path.dirname(__file__)
+#     filename = os.path.join(module_path, "../operational_rdbms/requests_table.csv")
+#     if not os.path.exists(filename):
+#         raise FileNotFoundError(f"File {filename} not found")
+#     data = pd.read_csv(filename, sep=",")
+#     return data
+#
+def load_datalake_requests_table():
     module_path = os.path.dirname(__file__)
-    filename = os.path.join(module_path, "../operational_rdbms/requests_table.csv")
-    if not os.path.exists(filename):
-        raise FileNotFoundError(f"File {filename} not found")
-    data = pd.read_csv(filename, sep=",")
-    return data
+    pattern = os.path.join(
+        module_path, "../../data_lake/landing/pqrs/requests_table*.csv"
+    )
+    files = glob.glob(pattern)
+    if len(files) == 0:
+        raise FileNotFoundError(f"File {pattern} not found")
+    tables = []
+    for filename in files:
+        data = pd.read_csv(filename, sep=",")
+        tables.append(data)
+    request_table = pd.concat(tables)
+    return request_table
 
+
+# <<<-----------------------------------------------------------------------------------
 
 if __name__ == "__main__":
     main()
